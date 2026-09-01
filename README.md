@@ -10,13 +10,31 @@ simple-app/
 └── tests/        # separate test executables (test_math, test_string)
 ```
 
+## Prerequisites
+
+- CMake >= 3.16
+- A C++17 compiler (g++, clang++, MSVC)
+- Network access on first configure (GoogleTest is fetched via CMake FetchContent, pinned to v1.15.2)
+
 ## Build & Test
 
+Run from the project root:
+
 ```sh
-mkdir build && cd build
-cmake ..
-make
-ctest
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build
 ```
 
-GoogleTest is fetched automatically via CMake FetchContent.
+Expected output: `100% tests passed, 0 tests failed out of 14`.
+
+## Fresh rebuild
+
+```sh
+cmake -E remove_directory build
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build
+```
+
+The `build/` directory is git-ignored and safe to delete (`cmake -E remove_directory` works on Linux, macOS, and Windows); it is regenerated from the sources.
