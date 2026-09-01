@@ -48,4 +48,13 @@ pip install gcovr
 python3 generate_mapping.py
 ```
 
-`run_coverage.sh` builds with `-DENABLE_COVERAGE=ON`, runs each test executable separately, and stores its isolated coverage data under `coverage_data/<test>/`. `generate_mapping.py` runs gcovr on each folder and writes the mapping.
+`run_coverage.sh` builds with `-DENABLE_COVERAGE=ON`, runs each test executable separately, and stores its isolated coverage data under `coverage_data/<test>/`. `generate_mapping.py` runs gcovr on each folder and writes the mapping (plus the inverted `source_to_test_mapping.json`).
+
+## Selecting tests for a change (PoC)
+
+```sh
+python3 select_tests.py            # list affected tests vs main
+python3 select_tests.py --run      # also execute them
+```
+
+Rules: changes under `src/` are diffed against `main` (default). Header changes, or changed files missing from the mapping, select all tests (conservative).

@@ -8,7 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "coverage_data"
 SRC_DIR = ROOT / "src"
-OUT_FILE = ROOT / "test_to_source_mapping.json"
+TEST_TO_SOURCE = ROOT / "test_to_source_mapping.json"
+SOURCE_TO_TEST = ROOT / "source_to_test_mapping.json"
 
 if shutil.which("gcovr") is None:
     sys.exit("gcovr not found. Install it with: pip install gcovr")
@@ -45,5 +46,15 @@ for test_dir in sorted(DATA_DIR.iterdir()):
 
     mapping[test_dir.name] = covered
 
-OUT_FILE.write_text(json.dumps(mapping, indent=2) + "\n")
-print(f"Wrote {OUT_FILE}")
+TEST_TO_SOURCE.write_text(json.dumps(mapping, indent=2) + "\n")
+print(f"Wrote {TEST_TO_SOURCE}")
+
+inverted = {}
+for test, sources in mapping.items():
+    for source in sources:
+        inverted.setdefault(source, []).append(test)
+for tests in inverted.values():
+    tests.sort()
+
+SOURCE_TO_TEST.write_text(json.dumps(inverted, indent=2) + "\n")
+print(f"Wrote {SOURCE_TO_TEST}")
