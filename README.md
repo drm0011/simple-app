@@ -37,3 +37,15 @@ ctest --test-dir build
 ```
 
 The `build/` directory is git-ignored and safe to delete (`cmake -E remove_directory` works on Linux, macOS, and Windows); it is regenerated from the sources.
+
+## Coverage mapping (PoC)
+
+Generates `test_to_source_mapping.json`, mapping each test executable to the `src/` files it executes (used for test impact analysis). GCC/Clang + gcovr only.
+
+```sh
+pip install gcovr
+./run_coverage.sh
+python3 generate_mapping.py
+```
+
+`run_coverage.sh` builds with `-DENABLE_COVERAGE=ON`, runs each test executable separately, and stores its isolated coverage data under `coverage_data/<test>/`. `generate_mapping.py` runs gcovr on each folder and writes the mapping.

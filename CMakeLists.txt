@@ -35,6 +35,12 @@ add_library(core STATIC
 )
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+option(ENABLE_COVERAGE "Build with gcov coverage instrumentation (GCC/Clang only)" OFF)
+if(ENABLE_COVERAGE)
+  target_compile_options(core PRIVATE --coverage)
+  target_link_options(core PUBLIC --coverage)
+endif()
+
 # Tests: separate executables so a test impact analysis pipeline
 # can map each executable to the sources it exercises.
 enable_testing()
