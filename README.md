@@ -1,7 +1,6 @@
 # simple-app
 
 A minimal C++17 project used to test a coverage-based test impact analysis pipeline.
-
 ## Structure
 
 ```
