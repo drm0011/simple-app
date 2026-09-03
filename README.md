@@ -57,4 +57,8 @@ python3 select_tests.py            # list affected tests vs main
 python3 select_tests.py --run      # also execute them
 ```
 
-Rules: changes under `src/` are diffed against `main` (default). Header changes, or changed files missing from the mapping, select all tests (conservative).
+Rules: changes under `src/` are diffed against `main` (default). Header changes, or changed files missing from the mapping, select all tests (conservative). If the mapping file is missing entirely, all tests run (via ctest).
+
+## CI
+
+`coverage-ci.yml` automates the pipeline: on merge to `main` it rebuilds the impact map and uploads it as an artifact; on PRs it downloads that map and runs only the affected tests.

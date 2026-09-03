@@ -44,6 +44,14 @@ def changed_src_files(base):
     return changed
 
 
+def run_all_via_ctest(args):
+    build = subprocess.run(["cmake", "--build", str(ROOT / args.build_dir)], cwd=ROOT)
+    if build.returncode != 0:
+        sys.exit("Build failed")
+    ctest = subprocess.run(["ctest", "--test-dir", str(ROOT / args.build_dir)], cwd=ROOT)
+    sys.exit(ctest.returncode)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Select tests affected by changes to src/ since a git ref."
@@ -54,9 +62,11 @@ def main():
     args = parser.parse_args()
 
     if not SOURCE_TO_TEST.is_file():
-        sys.exit(
-            f"Missing {SOURCE_TO_TEST}. Run run_coverage.sh then generate_mapping.py first."
-        )
+        print(f"Warning: {SOURCE_TO_TEST} not found. Selecting all tests.")
+        if args.run:
+            run_all_via_ctest(args)
+        print("Selected tests: all")
+        return
 
     mapping = json.loads(SOURCE_TO_TEST.read_text())
     all_tests = sorted({t for tests in mapping.values() for t in tests})
