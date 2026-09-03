@@ -17,3 +17,5 @@ std::string reverse(const std::string& input) {
 }
 
 } // namespace core
+
+// harmless comment to trigger selective testing
