@@ -1,1 +1,6 @@
 build/
+coverage_data/
+test_to_source_mapping.json
+source_to_test_mapping.json
+*.gcda
+*.gcno

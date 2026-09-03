@@ -1,0 +1,63 @@
+name: Coverage Impact (PoC)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'src/**'
+      - '.github/workflows/coverage-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-map:
+    name: Build test impact map
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: Generate impact map
+        run: |
+          ./run_coverage.sh
+          python3 generate_mapping.py
+          cat source_to_test_mapping.json
+
+      - name: Upload impact map as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-to-test-map
+          path: source_to_test_mapping.json
+          retention-days: 30
+
+  smart-test:
+    name: Smart test selection (PR)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download impact map from main
+        uses: dawidd6/action-download-artifact@v12
+        continue-on-error: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: coverage-ci.yml
+          name: source-to-test-map
+          search_artifacts: true
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Select and run affected tests
+        run: python3 select_tests.py --base origin/${{ github.base_ref }} --run
