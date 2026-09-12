@@ -57,7 +57,7 @@ python3 select_tests.py            # list affected tests vs main
 python3 select_tests.py --run      # also execute them
 ```
 
-Rules: changes under `src/` are diffed against `main` (default). Header changes, or changed files missing from the mapping, select all tests (conservative). If the mapping file is missing entirely, all tests run (via ctest).
+Rules: changes under `src/` are diffed against `main` (default). Conservative fallbacks trigger the full suite: header changes, changed files missing from the mapping, build-system/config changes (`CMakeLists.txt`, `*.cmake`, workflow files, pipeline scripts), a missing mapping, or a stale mapping (`--max-age-hours`, default 168). Every run writes `test_selection_report.json` with the changed files, the rule that fired, and the selected tests.
 
 ## CI
 

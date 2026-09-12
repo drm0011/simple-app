@@ -3,6 +3,7 @@ import json
 import shutil
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -56,5 +57,14 @@ for test, sources in mapping.items():
 for tests in inverted.values():
     tests.sort()
 
-SOURCE_TO_TEST.write_text(json.dumps(inverted, indent=2) + "\n")
+SOURCE_TO_TEST.write_text(
+    json.dumps(
+        {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "mapping": inverted,
+        },
+        indent=2,
+    )
+    + "\n"
+)
 print(f"Wrote {SOURCE_TO_TEST}")
